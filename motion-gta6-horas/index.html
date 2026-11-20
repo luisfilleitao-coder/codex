@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Quanto tempo dura o modo história do GTA 6? — motion 3D (15 s)</title>
+<style>
+  :root{ --cream:#fff1e6; --pink:#ff4f9a; --orange:#ffb347; --cyan:#6ee7ff; --crema:#ffb347; }
+  html,body{margin:0;height:100%;background:#0a0410;overflow:hidden;
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;}
+  #stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#0a0410;}
+  #frame{position:relative;width:min(100vw,calc(100vh * 16 / 9));aspect-ratio:16/9;overflow:hidden;
+    background:radial-gradient(ellipse at 70% 30%,#5a1c4a 0%,#23093a 45%,#0a0410 100%);}
+  #gl{position:absolute;inset:0;width:100%;height:100%;display:block;}
+  .cap{position:absolute;color:var(--cream);opacity:0;pointer-events:none;will-change:opacity,transform;}
+  .kicker{display:block;font-size:clamp(11px,1.05vw,20px);letter-spacing:.22em;text-transform:uppercase;
+    color:var(--orange);margin-bottom:.8em;font-weight:700;}
+  .title{left:6%;top:14%;width:50%;font-size:clamp(34px,4.6vw,88px);font-weight:900;line-height:1.02;letter-spacing:-.025em;}
+  .title .sub{display:block;margin-top:.35em;font-size:.36em;font-weight:500;letter-spacing:0;color:#f3c9dc;}
+  .step{left:6%;bottom:13%;width:46%;font-size:clamp(22px,2.6vw,50px);font-weight:800;line-height:1.16;letter-spacing:-.01em;}
+  .num{display:inline-flex;align-items:center;justify-content:center;width:1.45em;height:1.45em;border-radius:50%;
+    background:linear-gradient(135deg,var(--pink),var(--orange));color:#1a0616;font-size:.72em;font-weight:900;margin-right:.35em;vertical-align:.12em;}
+  .card{left:6%;top:30%;width:44%;}
+  .card .big{font-size:clamp(110px,13vw,250px);font-weight:900;line-height:.9;letter-spacing:-.04em;
+    background:linear-gradient(90deg,var(--pink),var(--orange));-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .card .lbl{margin-top:.25em;font-size:clamp(24px,2.8vw,54px);font-weight:800;line-height:1.1;}
+  .card .note{margin-top:.5em;font-size:clamp(16px,1.5vw,28px);color:#f3c9dc;font-weight:500;}
+  .final{left:6%;bottom:12%;width:50%;font-size:clamp(26px,3.2vw,62px);font-weight:900;line-height:1.1;letter-spacing:-.02em;}
+  .final .eq{display:block;margin-top:.5em;font-size:.5em;font-weight:600;color:#f3c9dc;}
+  .final .eq b{color:var(--orange);font-weight:800;}
+  .src{position:absolute;left:6%;bottom:3.5%;font-size:clamp(11px,1vw,16px);color:#c99ab4;opacity:0;letter-spacing:.02em;}
+  #bar{position:absolute;left:0;bottom:0;height:6px;width:0;background:linear-gradient(90deg,var(--pink),var(--orange));}
+  #bar-bg{position:absolute;left:0;right:0;bottom:0;height:6px;background:rgba(255,241,230,.08);}
+  #shade{position:absolute;inset:0;pointer-events:none;opacity:0;
+    background:linear-gradient(90deg,rgba(10,4,16,.85) 0%,rgba(10,4,16,.4) 45%,rgba(10,4,16,0) 70%);}
+  @media (max-aspect-ratio: 16/9){ #frame{width:100vw;height:auto;} }
+
+  /* ---- formato vertical 9:16 (Shorts / Reels): ?format=short ---- */
+  .short #frame{width:min(100vw,calc(100vh * 9 / 16));aspect-ratio:9/16;}
+  .short .title{left:6%;top:6%;width:88%;font-size:74px;}
+  .short .title .kicker{font-size:22px;}
+  .short .step{left:6%;bottom:7%;width:88%;font-size:48px;}
+  .short .card{left:6%;top:8%;width:88%;}
+  .short .card .big{font-size:230px;}
+  .short .card .lbl{font-size:50px;}
+  .short .card .note{font-size:28px;}
+  .short .final{left:6%;bottom:6%;width:88%;font-size:58px;}
+  .short .src{left:6%;bottom:2%;font-size:20px;}
+  .short #shade{background:linear-gradient(180deg,rgba(10,4,16,.85) 0%,rgba(10,4,16,0) 30%,rgba(10,4,16,0) 62%,rgba(10,4,16,.9) 100%);}
+</style>
+<script type="importmap">
+{ "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js" } }
+</script>
+</head>
+<body>
+<div id="stage">
+  <div id="frame">
+    <canvas id="gl"></canvas>
+    <div id="shade"></div>
+
+    <div class="cap title" data-t0="0.2" data-t1="2.45">
+      <span class="kicker">Motion 3D · 15 s</span>
+      Quanto tempo dura o modo história do GTA 6?
+      <span class="sub">Cerca de 50 horas, segundo o leak mais citado</span>
+    </div>
+
+    <div class="cap step" data-t0="2.3" data-t1="5.9">
+      <span class="num">50</span>horas de modo história (estimativa não oficial)
+    </div>
+    <div class="cap step" data-t0="5.8" data-t1="8.2">
+      <span class="num">2</span>dias inteiros de jogo, quase sem parar
+    </div>
+
+    <div class="cap card" data-t0="8.0" data-t1="9.7">
+      <div class="big">33</div>
+      <div class="lbl">filmes de 90 minutos</div>
+    </div>
+    <div class="cap card" data-t0="9.6" data-t1="11.2">
+      <div class="big">7</div>
+      <div class="lbl">voos Lisboa–Nova Iorque</div>
+      <div class="note">cerca de 7 h cada</div>
+    </div>
+    <div class="cap card" data-t0="11.1" data-t1="12.7">
+      <div class="big">250</div>
+      <div class="lbl">km a pé</div>
+      <div class="note">a 5 km/h, mais do que Lisboa–Coimbra</div>
+    </div>
+
+    <div class="cap final" data-t0="12.9" data-t1="15.0">
+      Em 50 horas dá para ver 33 filmes… ou para viver a história do GTA 6.
+      <span class="eq">E tu, o que farias com <b>50 horas</b>?</span>
+    </div>
+
+    <div class="src" id="src">Fonte da estimativa: leak de Tom Henderson (Insider Gaming). A Rockstar não confirmou.</div>
+
+    <div id="bar-bg"></div>
+    <div id="bar"></div>
+  </div>
+</div>
+
+<script type="module">
+import * as THREE from 'three';
+
+const DURATION = 15;
+const params = new URLSearchParams(location.search);
+const fixedT = params.has('t') ? parseFloat(params.get('t')) : null;
+const SHORT = params.get('format') === 'short';
+document.body.classList.toggle('short', SHORT);
+
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const smooth = (a, b, t) => { const x = clamp((t - a) / (b - a)); return x * x * (3 - 2 * x); };
+const win = (t, t0, t1, fi = 0.3, fo = 0.3) => clamp(Math.min((t - t0) / fi, (t1 - t) / fo));
+
+/* ---------- renderer ---------- */
+const canvas = document.getElementById('gl');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(30, 16 / 9, 0.1, 100);
+function resize() {
+  const f = document.getElementById('frame');
+  renderer.setSize(f.clientWidth, f.clientHeight, false);
+  camera.aspect = f.clientWidth / f.clientHeight; camera.updateProjectionMatrix();
+}
+window.addEventListener('resize', resize); resize();
+
+scene.add(new THREE.HemisphereLight(0xffd6ea, 0x2a0a2a, 1.1));
+const key = new THREE.DirectionalLight(0xfff0e0, 1.8); key.position.set(4, 6, 6); scene.add(key);
+const rim = new THREE.DirectionalLight(0x6ee7ff, 0.9); rim.position.set(-5, 3, -4); scene.add(rim);
+
+/* ---------- 50 hour-blocks ---------- */
+const grid = new THREE.Group();
+grid.position.set(SHORT ? 0 : 2.3, SHORT ? -0.4 : -0.2, 0);
+scene.add(grid);
+const cubeGeo = new THREE.BoxGeometry(0.5, 0.5, 0.5);
+const palette = [0xff4f9a, 0xff7a6b, 0xffb347];
+const blocks = [];
+for (let i = 0; i < 50; i++) {
+  const col = i % 5, row = Math.floor(i / 5);
+  const gridPos = new THREE.Vector3((col - 2) * 0.66, (row - 4.5) * 0.66, 0);
+  // duas "torres" de 24 horas + 2 horas extra, para mostrar "2 dias"
+  // torre A (dia 1): 24 cubos, 4 colunas x 6 linhas; torre B (dia 2): 24 cubos; 2 extra à frente
+  let towerPos;
+  if (i < 24)      towerPos = new THREE.Vector3(-1.2 + ((i % 4) - 1.5) * 0.66, -2.3 + Math.floor(i / 4) * 0.62, 0);
+  else if (i < 48) { const j = i - 24; towerPos = new THREE.Vector3(1.2 + ((j % 4) - 1.5) * 0.66, -2.3 + Math.floor(j / 4) * 0.62, 0); }
+  else             towerPos = new THREE.Vector3(((i - 48) - 0.5) * 0.9, -2.9, 1.0);
+  const color = palette[i % palette.length];
+  const mat = new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0,
+    roughness: 0.35, metalness: 0.1 });
+  mat.userData.base = new THREE.Color(color);
+  const m = new THREE.Mesh(cubeGeo, mat);
+  m.position.copy(gridPos);
+  grid.add(m);
+  blocks.push({ m, mat, gridPos, towerPos, i });
+}
+
+/* ---------- "sol" de fundo (estilo pôr do sol) ---------- */
+const sunMat = new THREE.MeshBasicMaterial({ color: 0xff8a5b, transparent: true, opacity: 0.0 });
+const sun = new THREE.Mesh(new THREE.CircleGeometry(3.2, 64), sunMat);
+sun.position.set(SHORT ? 0 : 3.2, SHORT ? 4.5 : 2.8, -9);
+scene.add(sun);
+
+/* ---------- DOM ---------- */
+const caps = [...document.querySelectorAll('.cap')];
+const bar = document.getElementById('bar');
+const shade = document.getElementById('shade');
+const srcEl = document.getElementById('src');
+
+function renderAt(t) {
+  // câmera: órbita lenta
+  const ang = -0.35 + smooth(0, DURATION, t) * 0.7;
+  const dist = (SHORT ? 20.5 : 15.5) - 1.0 * smooth(12.5, 15, t);
+  const cx = grid.position.x;
+  camera.position.set(cx + Math.sin(ang) * dist, 1.2, Math.cos(ang) * dist);
+  camera.lookAt(cx, grid.position.y + (SHORT ? 0.2 : 0.8), 0);
+
+  // 1) horas acendem uma a uma (2.5 → 5.6 s)
+  const sweep = 2.5, sweepLen = 3.1;
+  // 2) grelha → duas torres (5.8 → 7.8 s)
+  const form = smooth(5.8, 7.8, t);
+  // 3) torres somem para dar lugar às comparações (8.0 → 8.6 s), voltam fracas no fim
+  const fade = 1 - smooth(7.9, 8.6, t) * 0.85;
+  const DIM = new THREE.Color(0x3a1545);
+
+  for (const b of blocks) {
+    const start = sweep + (b.i / 50) * sweepLen;
+    const lit = smooth(start, start + 0.25, t);
+    b.mat.emissiveIntensity = lit * 0.55 + 0.05 * Math.sin(t * 4 + b.i) * lit;
+    b.mat.color.copy(b.mat.userData.base).lerp(DIM, 1 - fade);
+    const p = b.gridPos.clone().lerp(b.towerPos, form);
+    b.m.position.copy(p);
+    const s = 0.35 + 0.65 * lit;
+    b.m.scale.setScalar(s);
+  }
+
+  // sol aparece no fundo durante as comparações
+  sunMat.opacity = 0.35 * smooth(7.8, 9.0, t) * (1 - smooth(12.6, 13.2, t));
+  sun.visible = sunMat.opacity > 0.001;
+
+  // captions
+  for (const c of caps) {
+    const t0 = +c.dataset.t0, t1 = +c.dataset.t1;
+    const a = win(t, t0, t1, 0.35, 0.3);
+    const e = a * a * (3 - 2 * a);
+    c.style.opacity = e;
+    c.style.transform = `translateY(${(1 - e) * 14}px)`;
+  }
+  srcEl.style.opacity = win(t, 2.3, 15, 0.5, 0.5) * 0.9;
+  shade.style.opacity = smooth(12.6, 13.4, t) * 0.9 + 0.35 * win(t, 0, 2.4, 0.5, 0.4);
+  bar.style.width = (clamp(t / DURATION) * 100).toFixed(3) + '%';
+
+  renderer.render(scene, camera);
+}
+
+window.renderAt = renderAt;
+window.DURATION = DURATION;
+if (fixedT !== null) renderAt(fixedT);
+else {
+  const t0 = performance.now();
+  const loop = () => { renderAt(((performance.now() - t0) / 1000) % DURATION); requestAnimationFrame(loop); };
+  requestAnimationFrame(loop);
+}
+</script>
+</body>
+</html>
