@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Como funciona uma máquina de espresso — motion 3D (15 s)</title>
+<style>
+  :root{
+    --cream:#f5ead6; --crema:#d9a441; --copper:#c8793a;
+    --water:#5fd0ff; --heat:#ff6a3d;
+  }
+  html,body{margin:0;height:100%;background:#0a0705;overflow:hidden;
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;}
+  #stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#0a0705;}
+  #frame{position:relative;width:min(100vw,calc(100vh * 16 / 9));aspect-ratio:16/9;overflow:hidden;
+    background:radial-gradient(ellipse at 62% 45%,#3d2519 0%,#170f0b 55%,#0b0806 100%);}
+  #gl{position:absolute;inset:0;width:100%;height:100%;display:block;}
+  .cap{position:absolute;color:var(--cream);opacity:0;pointer-events:none;will-change:opacity,transform;}
+  .cap .kicker{display:block;font-size:clamp(11px,1.05vw,20px);letter-spacing:.22em;text-transform:uppercase;
+    color:var(--crema);margin-bottom:.8em;font-weight:600;}
+  .title{left:6%;top:14%;width:52%;font-size:clamp(34px,4.6vw,88px);font-weight:800;line-height:1.02;letter-spacing:-.025em;}
+  .title .sub{display:block;margin-top:.35em;font-size:.36em;font-weight:500;letter-spacing:0;color:#e9d7b8;}
+  .step{left:6%;bottom:13%;width:44%;font-size:clamp(22px,2.6vw,50px);font-weight:700;line-height:1.16;letter-spacing:-.01em;}
+  .num{display:inline-flex;align-items:center;justify-content:center;width:1.45em;height:1.45em;border-radius:50%;
+    background:var(--crema);color:#2a1a10;font-size:.72em;font-weight:800;margin-right:.35em;vertical-align:.12em;}
+  .final{left:6%;bottom:12%;width:50%;font-size:clamp(26px,3.2vw,62px);font-weight:800;line-height:1.12;letter-spacing:-.02em;}
+  .final .eq{display:block;margin-top:.5em;font-size:.55em;font-weight:600;color:#e9d7b8;}
+  .final .eq b{color:var(--crema);font-weight:800;}
+  #hud{position:absolute;right:5.5%;top:9%;display:flex;flex-direction:column;gap:14px;}
+  .chip{opacity:0;min-width:clamp(150px,15vw,290px);padding:clamp(10px,1vw,18px) clamp(14px,1.4vw,24px);border-radius:16px;
+    background:rgba(245,234,214,.07);border:1px solid rgba(245,234,214,.18);color:var(--cream);backdrop-filter:blur(6px);}
+  .chip .lbl{font-size:clamp(10px,.85vw,15px);letter-spacing:.16em;text-transform:uppercase;opacity:.7;}
+  .chip .val{font-size:clamp(28px,3vw,58px);font-weight:800;font-variant-numeric:tabular-nums;line-height:1.1;}
+  .chip .val small{font-size:.45em;font-weight:600;margin-left:.2em;opacity:.8;}
+  #chipT .val{color:#ffb08a;} #chipP .val{color:var(--water);}
+  #bar{position:absolute;left:0;bottom:0;height:6px;width:0;background:linear-gradient(90deg,var(--copper),var(--crema));}
+  #bar-bg{position:absolute;left:0;right:0;bottom:0;height:6px;background:rgba(245,234,214,.08);}
+  #shade{position:absolute;inset:0;pointer-events:none;opacity:0;
+    background:linear-gradient(90deg,rgba(10,7,5,.85) 0%,rgba(10,7,5,.4) 45%,rgba(10,7,5,0) 70%);}
+  @media (max-aspect-ratio: 16/9){ #frame{width:100vw;height:auto;} }
+</style>
+<script type="importmap">
+{ "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js" } }
+</script>
+</head>
+<body>
+<div id="stage">
+  <div id="frame">
+    <canvas id="gl"></canvas>
+    <div id="shade"></div>
+
+    <div class="cap title" data-t0="0.2" data-t1="2.45">
+      <span class="kicker">Motion 3D · 15 s</span>
+      Como funciona uma máquina de espresso
+      <span class="sub">Quatro etapas, do reservatório à xícara</span>
+    </div>
+
+    <div class="cap step" data-t0="2.3" data-t1="5.1">
+      <span class="num">1</span>A bomba puxa a água do reservatório
+    </div>
+    <div class="cap step" data-t0="5.0" data-t1="7.9">
+      <span class="num">2</span>A caldeira aquece a água a cerca de 93 °C
+    </div>
+    <div class="cap step" data-t0="7.8" data-t1="10.7">
+      <span class="num">3</span>A pressão de ~9 bar força a água através do café
+    </div>
+    <div class="cap step" data-t0="10.6" data-t1="13.1">
+      <span class="num">4</span>O espresso cai na xícara, com crema por cima
+    </div>
+    <div class="cap final" data-t0="13.0" data-t1="15.0">
+      Espresso = água quente + pressão + café moído
+      <span class="eq">Cada etapa depende da anterior: <b>calor, pressão e moagem</b>...</span>
+    </div>
+
+    <div id="hud">
+      <div class="chip" id="chipT" data-t0="4.9" data-t1="13.6">
+        <div class="lbl">Temperatura</div>
+        <div class="val"><span id="tVal">20</span><small>°C</small></div>
+      </div>
+      <div class="chip" id="chipP" data-t0="7.7" data-t1="13.6">
+        <div class="lbl">Pressão</div>
+        <div class="val"><span id="pVal">0.0</span><small>bar</small></div>
+      </div>
+    </div>
+
+    <div id="bar-bg"></div>
+    <div id="bar"></div>
+  </div>
+</div>
+
+<script type="module">
+import * as THREE from 'three';
+
+const DURATION = 15;
+const params = new URLSearchParams(location.search);
+const fixedT = params.has('t') ? parseFloat(params.get('t')) : null;
+
+/* ---------- helpers ---------- */
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const smooth = (a, b, t) => { const x = clamp((t - a) / (b - a)); return x * x * (3 - 2 * x); };
+const win = (t, t0, t1, fi = 0.3, fo = 0.3) => clamp(Math.min((t - t0) / fi, (t1 - t) / fo));
+function rng(seed) {
+  return () => {
+    seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+    let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+const R = rng(7);
+
+function dotTexture() {
+  const c = document.createElement('canvas'); c.width = c.height = 64;
+  const g = c.getContext('2d');
+  const grd = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+  grd.addColorStop(0, 'rgba(255,255,255,1)');
+  grd.addColorStop(0.4, 'rgba(255,255,255,.8)');
+  grd.addColorStop(1, 'rgba(255,255,255,0)');
+  g.fillStyle = grd; g.fillRect(0, 0, 64, 64);
+  const tex = new THREE.CanvasTexture(c);
+  return tex;
+}
+const dotTex = dotTexture();
+
+/* ---------- renderer / scene ---------- */
+const canvas = document.getElementById('gl');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.05;
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(30, 16 / 9, 0.1, 100);
+
+function resize() {
+  const frame = document.getElementById('frame');
+  const w = frame.clientWidth, h = frame.clientHeight;
+  renderer.setSize(w, h, false);
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+}
+window.addEventListener('resize', resize);
+resize();
+
+/* ---------- lights ---------- */
+scene.add(new THREE.HemisphereLight(0xfff1e0, 0x2a1a12, 1.0));
+const key = new THREE.DirectionalLight(0xfff4e6, 2.1); key.position.set(4, 6, 5); scene.add(key);
+const rim = new THREE.DirectionalLight(0x8fc4ff, 0.8); rim.position.set(-5, 3, -4); scene.add(rim);
+const heatLight = new THREE.PointLight(0xff5a2a, 0, 4, 2); heatLight.position.set(0.4, 0.6, 0.9); scene.add(heatLight);
+
+/* ---------- machine ---------- */
+const machine = new THREE.Group();
+scene.add(machine);
+
+const steel  = new THREE.MeshStandardMaterial({ color: 0xc9ced6, metalness: 0.85, roughness: 0.28 });
+const dark   = new THREE.MeshStandardMaterial({ color: 0x2b2b30, metalness: 0.6, roughness: 0.4 });
+const glass  = new THREE.MeshStandardMaterial({ color: 0xdfe6ee, metalness: 0.1, roughness: 0.15,
+                                                transparent: true, opacity: 0.14, depthWrite: false });
+const copper = new THREE.MeshStandardMaterial({ color: 0xc8793a, metalness: 0.9, roughness: 0.25,
+                                                emissive: 0xff4a1c, emissiveIntensity: 0,
+                                                transparent: true, opacity: 0.62, depthWrite: false });
+const water  = new THREE.MeshStandardMaterial({ color: 0x4fc3f7, metalness: 0, roughness: 0.05,
+                                                transparent: true, opacity: 0.38, depthWrite: false });
+const puckMat = new THREE.MeshStandardMaterial({ color: 0x5a3118, roughness: 0.95 });
+const cupMat  = new THREE.MeshStandardMaterial({ color: 0xf7f3ea, roughness: 0.3,
+                                                 transparent: true, opacity: 0.8, depthWrite: false, side: THREE.DoubleSide });
+const coffeeMat = new THREE.MeshStandardMaterial({ color: 0x3b1d0c, roughness: 0.35 });
+const cremaMat  = new THREE.MeshStandardMaterial({ color: 0xc99a5b, roughness: 0.6 });
+const groundMat = new THREE.MeshBasicMaterial({ map: (() => {
+  const c = document.createElement('canvas'); c.width = c.height = 256;
+  const g = c.getContext('2d'); const gr = g.createRadialGradient(128,128,0,128,128,128);
+  gr.addColorStop(0,'rgba(0,0,0,.75)'); gr.addColorStop(1,'rgba(0,0,0,0)');
+  g.fillStyle = gr; g.fillRect(0,0,256,256); return new THREE.CanvasTexture(c); })(),
+  transparent: true, depthWrite: false });
+
+function addEdges(mesh, opacity = 0.35) {
+  const e = new THREE.LineSegments(new THREE.EdgesGeometry(mesh.geometry),
+    new THREE.LineBasicMaterial({ color: 0xf5ead6, transparent: true, opacity }));
+  mesh.add(e);
+  return mesh;
+}
+function place(mesh, x, y, z, parent = machine) { mesh.position.set(x, y, z); parent.add(mesh); return mesh; }
+
+// ground shadow
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(5.2, 3.6), groundMat);
+ground.rotation.x = -Math.PI / 2; ground.position.set(0.2, -1.2, 0.3); machine.add(ground);
+
+// drip tray
+place(addEdges(new THREE.Mesh(new THREE.BoxGeometry(3.0, 0.14, 1.0), dark)), 0, -1.0, 0.9);
+
+// body (glass / x-ray look)
+place(addEdges(new THREE.Mesh(new THREE.BoxGeometry(2.5, 3.0, 1.5), glass), 0.9), 0, 0.48, 0);
+
+// water tank on top
+const tankFrame = place(addEdges(new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.55, 1.1, 40, 1, true),
+  new THREE.MeshStandardMaterial({ color: 0xbfe9ff, transparent: true, opacity: 0.12, depthWrite: false, side: THREE.DoubleSide })), 0.5), -0.6, 2.6, -0.1);
+const tankWater = place(new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 0.9, 40), water), -0.6, 2.5, -0.1);
+
+// pump
+const pump = place(addEdges(new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.17, 0.5, 32), steel)),
+  -0.6, 0.5, -0.1);
+pump.rotation.z = Math.PI / 2;
+
+// boiler
+const boiler = place(addEdges(new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 1.5, 48), copper)),
+  0.4, 0.6, 0);
+const element = place(new THREE.Mesh(new THREE.TorusGeometry(0.36, 0.045, 12, 48),
+  new THREE.MeshStandardMaterial({ color: 0x552010, emissive: 0xff5a2a, emissiveIntensity: 0 })), 0.4, -0.02, 0);
+element.rotation.x = Math.PI / 2;
+
+// group head
+const groupHead = place(addEdges(new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.35, 0.45),
+  new THREE.MeshStandardMaterial({ color: 0x9aa1ab, metalness: 0.9, roughness: 0.3, emissive: 0xc8793a, emissiveIntensity: 0 }))),
+  0.4, 0.25, 0.95);
+
+// portafilter basket + puck + handle
+place(new THREE.Mesh(new THREE.CylinderGeometry(0.29, 0.22, 0.14, 40, 1, true), steel), 0.4, -0.1, 1.0);
+const puck = place(new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.25, 0.1, 40), puckMat), 0.4, -0.1, 1.0);
+place(new THREE.Mesh(new THREE.BoxGeometry(0.13, 0.07, 0.75), dark), 0.4, -0.12, 1.5);
+
+// cup + coffee + crema
+const cupBottom = -0.92;
+place(new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.22, 0.5, 40, 1, true), cupMat), 0.4, -0.67, 1.0);
+const coffee = new THREE.Mesh(new THREE.CylinderGeometry(0.27, 0.22, 1, 40), coffeeMat);
+coffee.geometry.translate(0, 0.5, 0);
+place(coffee, 0.4, cupBottom, 1.0); coffee.scale.y = 0.001;
+const crema = place(new THREE.Mesh(new THREE.CylinderGeometry(0.27, 0.27, 0.05, 40), cremaMat), 0.4, cupBottom, 1.0);
+crema.visible = false;
+
+// pressure gauge on front of body
+const gauge = place(new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.24, 0.03, 40),
+  new THREE.MeshStandardMaterial({ color: 0xf5f1e8, roughness: 0.4 })), -0.5, 1.2, 0.78);
+gauge.rotation.x = Math.PI / 2;
+const needlePivot = new THREE.Group(); needlePivot.position.set(-0.5, 1.2, 0.8); machine.add(needlePivot);
+const needle = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.2, 0.02),
+  new THREE.MeshBasicMaterial({ color: 0xff6a3d }));
+needle.geometry.translate(0, 0.08, 0); needlePivot.add(needle);
+needlePivot.rotation.z = -0.75 * Math.PI;
+
+// pipes (visual)
+const pathA = [[-0.6,2.05,-0.1],[-0.6,1.2,-0.1],[-0.6,0.5,-0.1],[-0.3,0.05,-0.1],[0.0,-0.02,0.0],[0.4,-0.02,0.0]];
+const pathB = [[0.4,-0.12,0.2],[0.4,0.0,0.6],[0.4,0.22,0.95],[0.4,-0.02,1.0]];
+const pathC = [[0.4,-0.16,1.0],[0.4,-0.5,1.0],[0.4,-0.82,1.0]];
+const toV = a => a.map(p => new THREE.Vector3(...p));
+const curveA = new THREE.CatmullRomCurve3(toV(pathA), false, 'centripetal');
+const curveB = new THREE.CatmullRomCurve3(toV(pathB), false, 'centripetal');
+const curveC = new THREE.CatmullRomCurve3(toV(pathC), false, 'centripetal');
+const pipeMat = new THREE.MeshStandardMaterial({ color: 0xb8bec8, metalness: 0.9, roughness: 0.3, transparent: true, opacity: 0.45, depthWrite: false });
+machine.add(new THREE.Mesh(new THREE.TubeGeometry(curveA, 120, 0.035, 10, false), pipeMat));
+machine.add(new THREE.Mesh(new THREE.TubeGeometry(curveB, 60, 0.035, 10, false), pipeMat));
+
+/* ---------- particle flows ---------- */
+function makeFlow(curve, n, color, size, t0, t1, speed) {
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(n * 3), 3));
+  const mat = new THREE.PointsMaterial({ color, size, map: dotTex, transparent: true, depthWrite: false,
+    blending: THREE.AdditiveBlending, opacity: 0, sizeAttenuation: true });
+  const pts = new THREE.Points(geo, mat);
+  pts.frustumCulled = false;
+  machine.add(pts);
+  return { curve, n, pts, mat, t0, t1, speed, off: Array.from({ length: n }, () => R()) };
+}
+const flowA = makeFlow(curveA, 70, 0x9fe6ff, 0.26, 2.3, 5.3, 0.22);
+const flowB = makeFlow(curveB, 40, 0x9fe6ff, 0.26, 7.8, 10.6, 0.5);
+const flowC = makeFlow(curveC, 36, 0xffb866, 0.26, 9.2, 13.0, 0.45);
+function updateFlow(f, t) {
+  const a = win(t, f.t0, f.t1, 0.25, 0.25);
+  f.pts.visible = a > 0.001;
+  f.mat.opacity = a * 0.95;
+  if (!f.pts.visible) return;
+  const arr = f.pts.geometry.attributes.position.array;
+  for (let i = 0; i < f.n; i++) {
+    const u = (((f.off[i] + (t - f.t0) * f.speed) % 1) + 1) % 1;
+    const p = f.curve.getPointAt(u);
+    arr[i * 3] = p.x; arr[i * 3 + 1] = p.y; arr[i * 3 + 2] = p.z;
+  }
+  f.pts.geometry.attributes.position.needsUpdate = true;
+}
+
+/* ---------- camera + machine layout ---------- */
+const TARGET = new THREE.Vector3(-0.9, 0.75, 0.2);
+machine.position.x = 1.7; // machine sits right of center, text on left
+
+function setEmissive(mesh, intensity) { mesh.material.emissiveIntensity = intensity; }
+
+/* ---------- DOM refs ---------- */
+const caps = [...document.querySelectorAll('.cap')];
+const chipT = document.getElementById('chipT'), chipP = document.getElementById('chipP');
+const tVal = document.getElementById('tVal'), pVal = document.getElementById('pVal');
+const bar = document.getElementById('bar');
+const shade = document.getElementById('shade');
+
+/* ---------- frame render ---------- */
+function renderAt(t) {
+  // machine entrance (rises in during 0.6–2.2 s)
+  const e = smooth(0.6, 2.2, t);
+  const eb = 1 - Math.pow(1 - e, 3);
+  machine.position.y = (1 - eb) * -1.6;
+  machine.scale.setScalar(0.8 + 0.2 * eb);
+  machine.rotation.y = 0.0;
+
+  // camera orbit (slow drift around the machine)
+  const ang = -0.6 + smooth(0, DURATION, t) * 0.9;
+  const dist = 11.6 - 1.0 * smooth(12.5, 15, t);
+  camera.position.set(
+    machine.position.x + TARGET.x * 0 + Math.sin(ang) * dist,
+    2.2 - 0.2 * smooth(0, 3, t),
+    Math.cos(ang) * dist
+  );
+  camera.lookAt(machine.position.x + TARGET.x, TARGET.y, TARGET.z);
+
+  // 1 · pump pulses while water is pulled
+  const pumpOn = win(t, 2.3, 5.1, 0.3, 0.3);
+  pump.material.emissive = pump.material.emissive || new THREE.Color();
+  pump.material.emissive.set(0x3fb8ff);
+  pump.material.emissiveIntensity = pumpOn * (0.25 + 0.35 * Math.abs(Math.sin(t * 9)));
+  tankWater.material.opacity = 0.38 + 0.12 * pumpOn;
+
+  // 2 · boiler heats up
+  const heat = smooth(5.0, 7.6, t);
+  copper.emissiveIntensity = heat * 0.75 + 0.04 * Math.sin(t * 6) * heat;
+  element.material.emissiveIntensity = heat * 2.2;
+  heatLight.intensity = heat * 4.0;
+
+  // 3 · pressure builds, gauge needle swings to ~9 bar (scale 0–12)
+  const p = smooth(7.8, 9.8, t) * 9.0;
+  needlePivot.rotation.z = -0.75 * Math.PI + (p / 12) * 1.5 * Math.PI;
+  const groupOn = win(t, 7.8, 10.7, 0.3, 0.3);
+  groupHead.material.emissiveIntensity = groupOn * 0.35;
+  puck.material.color.set(0x5a3118).lerp(new THREE.Color(0x2a1409), smooth(8.0, 10.6, t));
+
+  // 4 · espresso drips and fills the cup
+  const fill = smooth(9.8, 13.0, t) * 0.34;
+  coffee.scale.y = Math.max(0.001, fill);
+  coffee.visible = fill > 0.001;
+  crema.visible = fill > 0.02 && t < 15;
+  crema.position.y = cupBottom + fill + 0.02;
+  coffeeMat.color.set(0x3b1d0c);
+
+  // particle flows
+  updateFlow(flowA, t);
+  updateFlow(flowB, t);
+  updateFlow(flowC, t);
+
+  // HUD values
+  const tempC = Math.round(20 + (93 - 20) * smooth(5.0, 7.6, t));
+  tVal.textContent = tempC;
+  pVal.textContent = p.toFixed(1);
+  const hudIn = (el, t0, t1) => { el.style.opacity = win(t, t0, t1, 0.35, 0.35); el.style.transform = `translateY(${(1 - win(t, t0, t1, 0.35, 0.35)) * -10}px)`; };
+  hudIn(chipT, 4.9, 13.6);
+  hudIn(chipP, 7.7, 13.6);
+
+  // captions
+  for (const c of caps) {
+    const t0 = +c.dataset.t0, t1 = +c.dataset.t1;
+    const a = win(t, t0, t1, 0.35, 0.3);
+    const ease = a * a * (3 - 2 * a);
+    c.style.opacity = ease;
+    c.style.transform = `translateY(${(1 - ease) * 14}px)`;
+  }
+
+  // final card: darken left side for legibility
+  shade.style.opacity = smooth(12.6, 13.4, t) * 0.9 + 0.35 * win(t, 0, 2.4, 0.5, 0.4);
+
+  // progress bar
+  bar.style.width = (clamp(t / DURATION) * 100).toFixed(3) + '%';
+
+  renderer.render(scene, camera);
+}
+
+window.renderAt = renderAt;          // used for frame-accurate capture: ?t=7.5
+window.DURATION = DURATION;
+
+if (fixedT !== null) {
+  renderAt(fixedT);
+} else {
+  const t0 = performance.now();
+  const loop = () => {
+    const t = ((performance.now() - t0) / 1000) % DURATION;
+    renderAt(t);
+    requestAnimationFrame(loop);
+  };
+  requestAnimationFrame(loop);
+}
+</script>
+</body>
+</html>
