@@ -38,6 +38,18 @@
   #shade{position:absolute;inset:0;pointer-events:none;opacity:0;
     background:linear-gradient(90deg,rgba(10,7,5,.85) 0%,rgba(10,7,5,.4) 45%,rgba(10,7,5,0) 70%);}
   @media (max-aspect-ratio: 16/9){ #frame{width:100vw;height:auto;} }
+
+  /* ---- formato vertical 9:16 (Shorts / Reels): ?format=short ---- */
+  .short #frame{width:min(100vw,calc(100vh * 9 / 16));aspect-ratio:9/16;}
+  .short .title{left:6%;top:6%;width:88%;font-size:74px;}
+  .short .title .kicker{font-size:22px;}
+  .short .step{left:6%;bottom:7%;width:88%;font-size:48px;}
+  .short .final{left:6%;bottom:6%;width:88%;font-size:58px;}
+  .short #hud{top:7%;left:6%;right:6%;flex-direction:row;justify-content:space-between;gap:16px;}
+  .short .chip{min-width:0;width:44%;padding:16px 20px;}
+  .short .chip .lbl{font-size:18px;}
+  .short .chip .val{font-size:56px;}
+  .short #shade{background:linear-gradient(180deg,rgba(10,7,5,.85) 0%,rgba(10,7,5,0) 30%,rgba(10,7,5,0) 62%,rgba(10,7,5,.9) 100%);}
 </style>
 <script type="importmap">
 { "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js" } }
@@ -94,6 +106,8 @@ import * as THREE from 'three';
 const DURATION = 15;
 const params = new URLSearchParams(location.search);
 const fixedT = params.has('t') ? parseFloat(params.get('t')) : null;
+const SHORT = params.get('format') === 'short';   // 9:16 para Shorts/Reels
+document.body.classList.toggle('short', SHORT);
 
 /* ---------- helpers ---------- */
 const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
@@ -279,8 +293,8 @@ function updateFlow(f, t) {
 }
 
 /* ---------- camera + machine layout ---------- */
-const TARGET = new THREE.Vector3(-0.9, 0.75, 0.2);
-machine.position.x = 1.7; // machine sits right of center, text on left
+const TARGET = SHORT ? new THREE.Vector3(0, 0.5, 0.2) : new THREE.Vector3(-0.9, 0.75, 0.2);
+machine.position.x = SHORT ? 0 : 1.7; // 16:9: máquina à direita, texto à esquerda; 9:16: centralizada
 
 function setEmissive(mesh, intensity) { mesh.material.emissiveIntensity = intensity; }
 
@@ -302,7 +316,7 @@ function renderAt(t) {
 
   // camera orbit (slow drift around the machine)
   const ang = -0.6 + smooth(0, DURATION, t) * 0.9;
-  const dist = 11.6 - 1.0 * smooth(12.5, 15, t);
+  const dist = (SHORT ? 15.0 : 11.6) - (SHORT ? 1.5 : 1.0) * smooth(12.5, 15, t);
   camera.position.set(
     machine.position.x + TARGET.x * 0 + Math.sin(ang) * dist,
     2.2 - 0.2 * smooth(0, 3, t),
